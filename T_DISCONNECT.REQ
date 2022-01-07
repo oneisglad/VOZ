@@ -1,0 +1,35 @@
+;параметры:  address (число)
+$last_sent + 1 varset last_sent
+2 2 1 $last_sent 1 bufferit package_buffer 
+calccrc pac_crc $package_buffer
+sizeof(package_buffer)+1 $package_buffer sizeof(package_buffer) $pac_crc 1 bufferit package_buffer_out 
+;if (qcount(package_queue) == 0) && ($delay_timer == 0)  disconnect
+; else put_in_queue
+;put_in_queue:
+  ;queue package_queue $package_buffer_out
+  ;goto done
+;disconnect:
+  ;N_DATAGRAM.REQ senddown address $address userdata $package_buffer_out 
+  ;goto done
+;done:
+
+
+queue package_queue $package_buffer_out
+queue package_queue $package_buffer_out
+queue package_queue $package_buffer_out
+queue package_queue $package_buffer_out
+
+if $delay_timer == 0 send
+if $delay_timer > 0 put_in_queue
+;queue package_queue $package_buffer_out
+;T_DELAY_TIMER $timeout_delay address $t_address timeevent delay_timer 
+put_in_queue:
+  
+  goto done
+send:
+   ;N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out
+   ;N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out
+   ;N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out
+  T_DELAY_TIMER 5 address $t_address timeevent delay_timer 
+  goto done
+done:
