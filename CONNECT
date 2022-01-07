@@ -1,0 +1,20 @@
+$connect_try-1 varset connect_try
+
+if $connect_try == 0 kill
+
+$last_sent + 1 varset last_sent
+2 0 1 $last_sent 1 bufferit package_buffer
+calccrc pac_crc $package_buffer
+sizeof(package_buffer)+1 $package_buffer sizeof(package_buffer) $pac_crc 1 bufferit package_buffer_out 
+N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out 
+N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out 
+;N_DATAGRAM.REQ senddown address $t_address userdata $package_buffer_out 
+
+CONNECT $timeout_connect timeevent con_try 
+goto exit
+
+kill:
+sendup T_DISCONNECT.IND 
+
+
+exit:
